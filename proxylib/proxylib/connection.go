@@ -30,9 +30,7 @@ import (
 // caller and passed in again when more data has been received on the
 // connection.
 
-type Direction struct {
-	InjectBuf *[]byte
-}
+type InjectBuf *[]byte
 
 type Connection struct {
 	Instance   *Instance
@@ -45,9 +43,9 @@ type Connection struct {
 	PolicyName string
 	Port       uint32
 
-	Parser Parser
-	Orig   Direction
-	Reply  Direction
+	Parser   Parser
+	OrigBuf  InjectBuf
+	ReplyBuf InjectBuf
 }
 
 func (connection *Connection) Matches(l7 interface{}) bool {
@@ -56,11 +54,11 @@ func (connection *Connection) Matches(l7 interface{}) bool {
 }
 
 // getInjectBuf return the pointer to the inject buffer slice header for the indicated direction
-func (connection *Connection) getInjectBuf(reply bool) *[]byte {
+func (connection *Connection) getInjectBuf(reply bool) InjectBuf {
 	if reply {
-		return connection.Reply.InjectBuf
+		return connection.ReplyBuf
 	}
-	return connection.Orig.InjectBuf
+	return connection.OrigBuf
 }
 
 // inject buffers data to be injected into the connection at the point of INJECT
